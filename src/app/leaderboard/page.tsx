@@ -1,47 +1,42 @@
 "use client";
 import React, { useEffect, useState } from "react";
-import Image from "next/image";
+import CandidateCard from "../../components/CandidateCard";
 
 type Candidate = { id: number; name: string; votes: number; image?: string; slug?: string };
 type Category = { id: number; name: string; candidates: Candidate[] };
 
+const PLACEHOLDER: Candidate[] = [
+  { id: 101, name: "Sample Artist A", votes: 120 },
+  { id: 102, name: "Sample Artist B", votes: 98 },
+  { id: 103, name: "Sample Artist C", votes: 76 },
+];
+
 export default function LeaderboardPage() {
-  const [data, setData] = useState<Category[]>([]);
+  const [data, setData] = useState<Category[]>([{ id: 1, name: 'Popular', candidates: PLACEHOLDER }]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     fetch("/api/votes")
       .then((r) => r.json())
-      .then((d) => setData(d.categories || []))
+      .then((d) => {
+        if (d.categories && d.categories.length) {
+          setData(d.categories || []);
+        }
+      })
       .finally(() => setLoading(false));
   }, []);
 
-  if (loading) return <div className="p-8">Loading leaderboard…</div>;
-
   return (
-    <div className="p-8">
-      <h1 className="text-2xl font-bold mb-6">Headies Leaderboard</h1>
+    <div>
+      <h1 className="text-3xl font-bold mb-6">Headies Leaderboard</h1>
       {data.map((cat) => (
         <section key={cat.id} className="mb-8">
           <h2 className="text-xl font-semibold mb-3">{cat.name}</h2>
-          <ol className="list-decimal pl-6">
-            {cat.candidates
-              .slice()
-              .sort((a, b) => b.votes - a.votes)
-              .map((c) => (
-                <li key={c.id} className="mb-2">
-                  <div className="flex items-center gap-3">
-                    {c.image ? (
-                      <Image src={c.image} alt={c.name} width={48} height={48} className="object-cover rounded" />
-                    ) : null}
-                    <div>
-                      <div className="font-medium">{c.name}</div>
-                      <div className="text-sm text-gray-600">{c.votes} votes</div>
-                    </div>
-                  </div>
-                </li>
-              ))}
-          </ol>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+            {cat.candidates.slice().sort((a,b) => b.votes - a.votes).map(c => (
+              <CandidateCard key={c.id} id={c.id} name={c.name} votes={c.votes} image={c.image} />
+            ))}
+          </div>
         </section>
       ))}
     </div>

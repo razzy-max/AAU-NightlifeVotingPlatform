@@ -3,8 +3,13 @@ import React, { useEffect, useState } from "react";
 
 type Category = { id: number; name: string };
 
+const PLACEHOLDER_CATEGORIES: Category[] = [
+  { id: 1, name: "Best Artist" },
+  { id: 2, name: "Best Performance" },
+];
+
 export default function AdminPage() {
-  const [categories, setCategories] = useState<Category[]>([]);
+  const [categories, setCategories] = useState<Category[]>(PLACEHOLDER_CATEGORIES);
   const [loading, setLoading] = useState(true);
   const [catName, setCatName] = useState("");
   const [candName, setCandName] = useState("");
@@ -14,7 +19,7 @@ export default function AdminPage() {
   useEffect(() => {
     fetch('/api/admin/categories')
       .then(r => r.json())
-      .then(d => setCategories(d))
+      .then(d => { if (d && d.length) setCategories(d) })
       .finally(() => setLoading(false));
   }, []);
 
@@ -35,17 +40,17 @@ export default function AdminPage() {
     setCategories(await res.json());
   }
 
-  if (loading) return <div className="p-8">Loading admin…</div>;
+  if (loading) return <div className="">Loading admin…</div>;
 
   return (
-    <div className="p-8">
-      <h1 className="text-2xl font-bold mb-6">Admin</h1>
+    <div>
+      <h1 className="text-3xl font-bold mb-6">Admin</h1>
 
       <section className="mb-8">
         <h2 className="font-semibold">Create Category</h2>
         <form onSubmit={createCategory} className="mt-2 flex gap-2">
-          <input value={catName} onChange={e => setCatName(e.target.value)} placeholder="Category name" className="px-2 py-1 border rounded" />
-          <button className="px-3 py-1 bg-green-600 text-white rounded">Create</button>
+          <input value={catName} onChange={e => setCatName(e.target.value)} placeholder="Category name" className="px-3 py-2 border rounded w-64" />
+          <button className="px-3 py-2 bg-green-600 text-white rounded">Create</button>
         </form>
       </section>
 
@@ -68,7 +73,7 @@ export default function AdminPage() {
         <h2 className="font-semibold">Existing Categories</h2>
         <ul className="mt-2">
           {categories.map(cat => (
-            <li key={cat.id} className="py-1">{cat.name} ({(cat as any).candidates?.length ?? 0} candidates)</li>
+            <li key={cat.id} className="py-1">{cat.name}</li>
           ))}
         </ul>
       </section>
