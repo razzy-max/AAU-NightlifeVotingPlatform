@@ -1,0 +1,59 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// Models for the Headies voting platform
+model Category {
+  id         Int         @id @default(autoincrement())
+  name       String
+  candidates Candidate[]
+  createdAt  DateTime    @default(now())
+}
+
+model Candidate {
+  id         Int       @id @default(autoincrement())
+  name       String
+  slug       String    @unique
+  description String?
+  image      String?
+  category   Category  @relation(fields: [categoryId], references: [id])
+  categoryId Int
+  votes      Vote[]
+  createdAt  DateTime  @default(now())
+}
+
+model Payment {
+  id         Int      @id @default(autoincrement())
+  reference  String   @unique
+  amount     Int
+  currency   String   @default("NGN")
+  method     String?
+  status     String   @default("pending") // pending, completed, failed
+  candidateId Int?
+  votes      Int      @default(0)
+  meta       Json?
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+  votesRelation Vote[] @relation("PaymentVotes")
+}
+
+model Vote {
+  id         Int      @id @default(autoincrement())
+  candidate  Candidate @relation(fields: [candidateId], references: [id])
+  candidateId Int
+  payment    Payment?  @relation("PaymentVotes", fields: [paymentId], references: [id])
+  paymentId  Int?
+  createdAt  DateTime @default(now())
+}
