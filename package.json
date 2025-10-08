@@ -6,7 +6,8 @@
     "dev": "next dev --turbopack",
     "build": "next build --turbopack",
     "start": "next start",
-    "lint": "eslint"
+    "seed": "node prisma/seed.js",
+    "lint": "eslint src --ext .ts,.tsx,.js,.jsx --ignore-pattern 'src/generated/**' --ignore-pattern '.next/**'"
   },
   "dependencies": {
     "@heroicons/react": "^2.2.0",
