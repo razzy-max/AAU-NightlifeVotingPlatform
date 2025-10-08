@@ -1,0 +1,10 @@
+{
+  "version": 2,
+  "name": "headies-voting-platform-preview-1",
+  "builds": [
+    { "src": "package.json", "use": "@vercel/next" }
+  ],
+  "routes": [
+    { "src": "/status.html", "dest": "/status.html" }
+  ]
+}
