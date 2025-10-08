@@ -1,0 +1,3 @@
+Contact: mailto:you@example.com
+Acknowledgement: This site is a preview deployment of the AAU Nightlife Voting Platform project.
+Expires: 2026-10-08
